@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     let card: EmojiMemoryGame.Card
+    // TODO: add property for background color
     
     var body: some View {
         GeometryReader { geometry in

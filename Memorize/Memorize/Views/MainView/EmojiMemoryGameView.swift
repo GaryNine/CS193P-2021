@@ -12,7 +12,7 @@ struct EmojiMemoryGameView: View {
     
     var body: some View {
         VStack {
-            Text("Memorize!").font(.largeTitle)
+            Text("Score: \(game.scoreCount)")
             ScrollView {
                 GeometryReader { geometry in
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatBestFits))]) {
@@ -26,47 +26,16 @@ struct EmojiMemoryGameView: View {
                     }
                 }
             }
-            .foregroundColor(.red)
-            HStack(alignment: .bottom, spacing: DrawingConstants.themeSpacing) {
-                Spacer()
-                vehicle
-                animal
-                sport
-                Spacer()
-            }
-            .font(.largeTitle)
-            .foregroundColor(.blue)
-        }
-        .padding(.horizontal)
-    }
-    
-    var vehicle: some View {
-        VStack {
             Button {
-                game.change(theme: .vehicles)
-            } label: { Image(systemName: "car") }
-            Text("Vehicles").font(.body)
-        }
-    }
-
-    var animal: some View {
-        VStack {
-            Button {
-                game.change(theme: .animals)
-            } label: { Image(systemName: "hare") }
-            Text("Animals").font(.body)
-        }
-    }
-
-    var sport: some View {
-        VStack {
-            Button {
-                game.change(theme: .sports)
+                
             } label: {
-                Image(systemName: "soccerball")
+                Text("New Game")
+                    .foregroundColor(.green)
             }
-            Text("Sports").font(.body)
         }
+        .font(.largeTitle)
+        .foregroundColor(.red)
+        .padding(.horizontal)
     }
     
     private var widthThatBestFits: CGFloat {
