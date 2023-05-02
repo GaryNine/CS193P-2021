@@ -13,26 +13,52 @@ class EmojiMemoryGame: ObservableObject {
     // MARK: Types
     
     typealias Card = MemoryGame<String>.Card
+    typealias Name = Theme<String>.ThemeName
     
     // MARK: -
     // MARK: Static
     
-    private static func createMemoryGame(with theme: Theme) -> MemoryGame<String> {
+    private static func getEmoji(by themeName: Name) -> [String] {
+        switch themeName {
+        case .vehicles:
+            return ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐",
+                    "🛻", "🚚", "🚛", "🚜", "🛵", "🛺", "🚔", "🚍", "🚘", "🚖"].shuffled()
+        case .sports:
+            return ["⚽️", "🏀", "🏈", "⚾️", "🥎", "🎾", "🏐", "🥏", "🎱",
+                    "🪀", "🏓", "🏸", "🏒", "🏑", "🥍", "🏏", "🪃", "🥅", "⛳️"].shuffled()
+        case .animals:
+            return ["🐶", "🐱", "🐭", "🐻‍❄️", "🐨",
+                    "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵", "🐥", "🦉", "🦅"].shuffled()
+        case .nature:
+            return ["🌲", "🌳", "🌴", "🪵", "🌱", "🌿", "☘️", "🍀", "🎍", "🪴",
+                    "🎋", "🍃", "🍂", "🍁", "🍄", "🌾", "🌷", "🪷", "🌺", "🪨"].shuffled()
+        case .smileys:
+            return ["😀", "😃", "😄", "😁", "😆", "🤣", "😅", "😂", "☺️", "😊",
+                    "🙂", "😋", "😉", "😘", "😚", "😇", "🥰", "🙃", "😙", "😗"].shuffled()
+        case .food:
+            return ["🍏", "🍎", "🍐", "🍊", "🍋", "🍌", "🍓", "🫐",
+                    "🍈", "🍒", "🍑", "🥭", "🥥", "🥝", "🍅", "🥑", "🍆", "🌽"].shuffled()
+        }
+    }
+    
+    private static func createMemoryGame(with theme: Theme<String>) -> MemoryGame<String> {
         return MemoryGame(numberOfPairsOfCards: theme.numberOfPairsOfCards) { pairIndex in
             theme.emojiChoises[pairIndex]
         }
     }
     
-    private static func createRandomTheme() -> Theme {
+    private static func createRandomTheme() -> Theme<String> {
         let randomIndex = Int.random(in: 8...20)
-        return Theme(numberOfPairsOfCards: randomIndex)
+        let randomThemeName = Name.allCases.randomElement()!
+        let emojis = EmojiMemoryGame.getEmoji(by: randomThemeName)
+        return Theme(name: randomThemeName, emojis: emojis, numberOfPairsOfCards: randomIndex)
     }
     
     // MARK: -
     // MARK: Private Properties
     
     @Published private var memoryGame: MemoryGame<String>
-    private var theme: Theme
+    private var theme: Theme<String>
     
     // MARK: -
     // MARK: Public Properties
@@ -64,6 +90,7 @@ class EmojiMemoryGame: ObservableObject {
     func startNewGame() {
         theme = EmojiMemoryGame.createRandomTheme()
         memoryGame = EmojiMemoryGame.createMemoryGame(with: theme)
+        print("New Game")
     }
     
     func choose(_ card: Card) {

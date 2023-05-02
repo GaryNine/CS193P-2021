@@ -38,8 +38,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[potentialMatchIndex].isMatched = true
                 }
                 cards[chosenIndex].isFaceUp = true
-                let possibleScore = getScoreForCards(at: [chosenIndex, potentialMatchIndex])
-                scoreCount = possibleScore * max(10 - (timeInterval), 1)
+                setScoreForCards(at: [chosenIndex, potentialMatchIndex], with: timeInterval)
                 cards[chosenIndex].haveBeenSeen = true
                 cards[potentialMatchIndex].haveBeenSeen = true
             } else {
@@ -52,19 +51,20 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     // MARK: -
     // MARK: Private Functions
     
-    private func getScoreForCards(at indices: [Int]) -> Int {
-        var scoreCount = 0
+    mutating private func setScoreForCards(at indices: [Int], with timeInterval: Int) {
+        var possibleScoreCount = 0
         indices.forEach { index in
             if cards[index].isMatched {
-                scoreCount += 1
+                possibleScoreCount += 1
             } else {
-                if cards[index].haveBeenSeen == true {
-                    scoreCount -= 1
+                if cards[index].haveBeenSeen {
+                    possibleScoreCount -= 1
                 }
             }
         }
-        
-        return scoreCount
+        if possibleScoreCount != 0 {
+            scoreCount += max((10 - timeInterval), 1) * possibleScoreCount
+        }        
     }
     
     // MARK: -

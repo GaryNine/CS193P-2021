@@ -15,15 +15,13 @@ struct EmojiMemoryGameView: View {
             Text("\(game.name)").foregroundColor(.blue)
             Text("Score: \(game.scoreCount)")
             ScrollView {
-                GeometryReader { geometry in
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatBestFits))]) {
-                        ForEach(game.cards) { card in
-                            CardView(card: card, color: game.color)
-                                .aspectRatio(DrawingConstants.cardAspectRatio, contentMode: .fit)
-                                .onTapGesture {
-                                    game.choose(card)
-                                }
-                        }
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatBestFits))]) {
+                    ForEach(game.cards) { card in
+                        CardView(card: card, color: game.color)
+                            .aspectRatio(DrawingConstants.cardAspectRatio, contentMode: .fit)
+                            .onTapGesture {
+                                game.choose(card)
+                            }
                     }
                 }
             }
