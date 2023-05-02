@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     let card: EmojiMemoryGame.Card
-    // TODO: add property for background color
+    let color: Color
     
     var body: some View {
         GeometryReader { geometry in
@@ -23,7 +23,7 @@ struct CardView: View {
                     shape.opacity(0)
                 }
                 else {
-                    shape.fill()
+                    shape.fill(Gradient(colors: [color, .accentColor]))
                 }
             }
         }
@@ -40,8 +40,12 @@ struct CardView: View {
     }
 }
 
-//struct CardView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CardView(card: )
-//    }
-//}
+// MARK: -
+// MARK: Previews
+
+struct CardView_Previews: PreviewProvider {
+    static var previews: some View {
+        let card = EmojiMemoryGame.Card(content: "😂", id: 0)
+        CardView(card: card, color: .orange)
+    }
+}

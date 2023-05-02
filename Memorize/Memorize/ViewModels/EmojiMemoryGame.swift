@@ -17,57 +17,64 @@ class EmojiMemoryGame: ObservableObject {
     // MARK: -
     // MARK: Static
     
-    static var theme: Theme?
-    
-    static var color: UIColor {
-        switch theme!.name.colors {
-        case "gray": return .gray
-        case "magenta": return .magenta
-        case "bronw": return .brown
-        case "blue": return .blue
-        case "yellow": return .yellow
-        case "green": return .green
-        default: return .red
+    private static func createMemoryGame(with theme: Theme) -> MemoryGame<String> {
+        return MemoryGame(numberOfPairsOfCards: theme.numberOfPairsOfCards) { pairIndex in
+            theme.emojiChoises[pairIndex]
         }
     }
     
-    private static func createMemoryGame() -> MemoryGame<String> {
+    private static func createRandomTheme() -> Theme {
         let randomIndex = Int.random(in: 8...20)
-        theme = Theme(name: .vehicles, numberOfPairsOfCards: randomIndex)
-        let emojis = theme!.name.emojis[0...randomIndex]
-        return MemoryGame(numberOfPairsOfCards: theme!.numberOfPairsOfCards) { pairIndex in
-            emojis[pairIndex]
-        }
+        return Theme(numberOfPairsOfCards: randomIndex)
     }
     
     // MARK: -
-    // MARK: Properties
+    // MARK: Private Properties
     
-    @Published private var memoryGame = createMemoryGame()
+    @Published private var memoryGame: MemoryGame<String>
+    private var theme: Theme
+    
+    // MARK: -
+    // MARK: Public Properties
     
     var cards: [Card] {
         return memoryGame.cards
     }
-    
     var scoreCount: Int {
         return memoryGame.scoreCount
+    }
+    var name: String {
+        return theme.name.rawValue
+    }
+    var color: Color {
+        switch theme.color {
+        case "gray": return .gray
+        case "orange": return .orange
+        case "brown": return .brown
+        case "blue": return .blue
+        case "yellow": return .yellow
+        case "green": return .green
+        default: return .orange
+        }
     }
     
     // MARK: -
     // MARK: Intent(s)
     
-    func choose(_ card: Card) {
-        memoryGame.choose(card)
+    func startNewGame() {
+        theme = EmojiMemoryGame.createRandomTheme()
+        memoryGame = EmojiMemoryGame.createMemoryGame(with: theme)
     }
     
-    func change(theme: Theme) {
-//        EmojiMemoryGame.theme = theme
-        memoryGame = EmojiMemoryGame.createMemoryGame()
+    func choose(_ card: Card) {
+        memoryGame.choose(card)
     }
     
     // MARK: -
     // MARK: Initializaition(s)
     
-    // TODO: add appropriate init
-//    init(with theme: Theme) { }
+    init() {
+        theme = EmojiMemoryGame.createRandomTheme()
+        memoryGame = EmojiMemoryGame.createMemoryGame(with: theme)
+    }
 }

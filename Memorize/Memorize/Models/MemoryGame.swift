@@ -15,6 +15,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: [Card]
     private(set) var scoreCount = 0
     
+    private var lastActionDate = Date()
+    
     private var indexOfOneAndOnlyFaceUpCard: Int? {
         get { cards.indices.filter({ cards[$0].isFaceUp }).oneAndOnly }
         set { cards.indices.forEach { cards[$0].isFaceUp = ($0 == newValue) } }
@@ -28,16 +30,41 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
            !cards[chosenIndex].isFaceUp,
            !cards[chosenIndex].isMatched
         {
+            let currentDate = Date()
             if let potentialMatchIndex = indexOfOneAndOnlyFaceUpCard {
+                let timeInterval = Int(currentDate.timeIntervalSince(lastActionDate))
                 if cards[chosenIndex].content == cards[potentialMatchIndex].content {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
                 }
                 cards[chosenIndex].isFaceUp = true
+                let possibleScore = getScoreForCards(at: [chosenIndex, potentialMatchIndex])
+                scoreCount = possibleScore * max(10 - (timeInterval), 1)
+                cards[chosenIndex].haveBeenSeen = true
+                cards[potentialMatchIndex].haveBeenSeen = true
             } else {
                 indexOfOneAndOnlyFaceUpCard = chosenIndex
+                lastActionDate = currentDate
             }
         }
+    }
+    
+    // MARK: -
+    // MARK: Private Functions
+    
+    private func getScoreForCards(at indices: [Int]) -> Int {
+        var scoreCount = 0
+        indices.forEach { index in
+            if cards[index].isMatched {
+                scoreCount += 1
+            } else {
+                if cards[index].haveBeenSeen == true {
+                    scoreCount -= 1
+                }
+            }
+        }
+        
+        return scoreCount
     }
     
     // MARK: -
@@ -54,10 +81,11 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     }
     
     // MARK: -
-    // MARK: Data 
+    // MARK: Data
     
     struct Card: Identifiable {
-        var isFaceUp = true
+        var haveBeenSeen = false
+        var isFaceUp = false
         var isMatched = false
         let content: CardContent
         let id: Int
